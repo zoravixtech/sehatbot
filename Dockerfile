@@ -22,7 +22,7 @@ RUN pnpm install
 COPY . .
 
 # Expose the port that the app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Define the command to run the application in development mode
 CMD ["pnpm", "dev"]
@@ -57,7 +57,7 @@ RUN chown -R nodeuser:nodejs /app
 USER nodeuser
 
 # Expose the port that the app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

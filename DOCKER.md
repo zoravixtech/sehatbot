@@ -27,7 +27,7 @@ API_KEY=your_google_api_key_here
 
 2. **Run the container:**
    ```bash
-   docker run -p 3000:3000 --env-file .env sehatbot-server
+   docker run -p 8080:8080 --env-file .env sehatbot-server
    ```
 
 3. **Or use Docker Compose:**
@@ -51,10 +51,10 @@ API_KEY=your_google_api_key_here
 docker build -t sehatbot-server .
 
 # Run the container
-docker run -p 3000:3000 --env-file .env sehatbot-server
+docker run -p 8080:8080 --env-file .env sehatbot-server
 
 # Run in background
-docker run -d -p 3000:3000 --env-file .env --name sehatbot sehatbot-server
+docker run -d -p 8080:8080 --env-file .env --name sehatbot sehatbot-server
 
 # Stop the container
 docker stop sehatbot
@@ -104,8 +104,8 @@ The application includes a health check endpoint at `/health` that returns:
 
 ## Port Configuration
 
-- The application runs on port `3000` inside the container
-- This is mapped to port `3000` on your host machine
+- The application runs on port `8080` inside the container
+- This is mapped to port `8080` on your host machine
 - You can change the host port by modifying the docker-compose.yml or docker run command
 
 ## Volume Mounts
@@ -125,7 +125,7 @@ The docker-compose setup includes:
    - Use `docker-compose config` to verify your configuration
 
 3. **Port Conflicts:**
-   - If port 3000 is already in use, change the host port in docker-compose.yml
+   - If port 8080 is already in use, change the host port in docker-compose.yml
 
 4. **Build Issues:**
    - Clear Docker cache: `docker system prune`

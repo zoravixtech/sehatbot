@@ -3,7 +3,7 @@ import http from 'http';
 
 const options = {
   host: 'localhost',
-  port: 3000,
+  port: process.env.PORT || 8080,
   path: '/health',
   timeout: 2000
 };

@@ -15,7 +15,8 @@ app.get('/health', (req, res) => {
 
 app.use('/',userRouter)
 
-app.listen(8080,()=>{
-    console.log("your server is running")
+const PORT = process.env.PORT || 8080;
+app.listen(PORT,()=>{
+    console.log(`Server is running on port ${PORT}`)
 })
 
