@@ -1,9 +1,10 @@
 import {Storage} from "@google-cloud/storage"
 import getSignedUrlSchema from "../schemas/signedUrlSchema.js";
 
-// Initialize Storage - use Application Default Credentials in Cloud Run
+// Initialize Storage - use the service account key file
 const storage = new Storage({
-    projectId: 'sehat-42ec3'
+    projectId: 'sehat-42ec3',
+    keyFilename: './gcp-key.json'
 });
 
 const bucketName='document_bucket-1';
@@ -29,10 +30,7 @@ const options = {
       version: 'v4',
       action: 'write',
       expires: Date.now() + 20 * 60 * 1000,
-      contentType: documentType,
-      extensionHeaders: {
-        'content-length': fileSize.toString()
-      }
+      contentType: documentType
     };
     const [url] = await file.getSignedUrl(options);
     
