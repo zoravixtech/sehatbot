@@ -15,7 +15,7 @@ app.get('/health', (req, res) => {
 
 app.use('/',userRouter)
 
-app.listen(3000,()=>{
+app.listen(8080,()=>{
     console.log("your server is running")
 })
 
