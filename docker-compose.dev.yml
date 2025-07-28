@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  sehatbot-server-dev:
+    build: 
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      # Add your environment variables here
+      # - API_KEY=${API_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./gcp-key.json:/app/gcp-key.json:ro
+    command: pnpm dev
+    restart: unless-stopped

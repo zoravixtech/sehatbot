@@ -139,7 +139,7 @@ TARGET_LANGUAGE: [${language}]
 
 5. **If the uploaded document is NOT a lab report or radiology report (e.g., it's a prescription, discharge summary, or non-medical file):**
    Respond with:
-   "⚠️ Sorry! This app is designed to understand medical reports such as blood tests or scans. Please upload a valid medical report (PDF or image)."
+   "⚠️ Sorry! This app is designed to understand medical reports such as blood tests or scans. Please upload a valid medical report (PDF)."
 
 6. **Final Section – Disclaimer:**
    Always end the message with this translated disclaimer:
