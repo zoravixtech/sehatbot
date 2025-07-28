@@ -30,6 +30,9 @@ const options = {
       action: 'write',
       expires: Date.now() + 20 * 60 * 1000,
       contentType: "application/pdf",
+      extensionHeaders: {
+    "content-length": parseInt(fileSize),
+  }
     };
     const [url] = await file.getSignedUrl(options);
     
