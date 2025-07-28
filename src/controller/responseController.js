@@ -2,10 +2,29 @@ import { GoogleGenAI } from "@google/genai";
 import generateResponseSchema from "../schemas/responseSchema.js";
 import { API_KEY } from "../config.js";
 
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+// Initialize AI with error handling
+let ai;
+try {
+  if (!API_KEY) {
+    throw new Error('API_KEY is not configured');
+  }
+  ai = new GoogleGenAI({ apiKey: API_KEY });
+  console.log('Google GenAI initialized successfully');
+} catch (error) {
+  console.error('Failed to initialize Google GenAI:', error.message);
+  ai = null;
+}
 
 
 export const generateResponse = async (req, res) => {
+  // Check if AI is properly initialized
+  if (!ai) {
+    return res.status(500).json({
+      error: "Service unavailable",
+      message: "AI service is not properly configured. Please check API_KEY environment variable."
+    });
+  }
+
   const parsed = generateResponseSchema.safeParse(req.body);
 
   if (!parsed.success) {
