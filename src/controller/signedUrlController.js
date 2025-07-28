@@ -1,9 +1,9 @@
 import {Storage} from "@google-cloud/storage"
 import getSignedUrlSchema from "../schemas/signedUrlSchema.js";
 
-
-const storage= new Storage({
-    keyFilename: 'gcp-key.json',
+// Initialize Storage - use Application Default Credentials in Cloud Run
+const storage = new Storage({
+    projectId: 'sehat-42ec3'
 });
 
 const bucketName='document_bucket-1';
@@ -11,16 +11,16 @@ const bucketName='document_bucket-1';
 const bucket = storage.bucket(bucketName);
 
 export const getSignedUrl=async(req,res)=>{
-const paresed=getSignedUrlSchema.safeParse(req.body);
+const parsed=getSignedUrlSchema.safeParse(req.body);
 
-if(!paresed.success){
+if(!parsed.success){
     return res.status(400).json({
       error: "Invalid input",
       issues: parsed.error.issues,
     });
 }
 try{
-const {fileName,documentType,fileSize}=paresed.data;
+const {fileName,documentType,fileSize}=parsed.data;
 if(parseInt(fileSize)>20971520){
    return res.status(400).json({error:"max file size 20Mb allowed"})
 }
@@ -29,11 +29,10 @@ const options = {
       version: 'v4',
       action: 'write',
       expires: Date.now() + 20 * 60 * 1000,
-      documentType,
+      contentType: documentType,
       extensionHeaders: {
-    'Content-Length':  fileSize.toString,
-  }
-      
+        'content-length': fileSize.toString()
+      }
     };
     const [url] = await file.getSignedUrl(options);
     
@@ -44,8 +43,8 @@ const options = {
 
 }
 catch(err){
-    res.status(400).json({err})
-    console.log(err)
+    res.status(500).json({error: "Failed to generate signed URL", details: err.message})
+    console.log("Signed URL Error:", err)
 }
 
 
