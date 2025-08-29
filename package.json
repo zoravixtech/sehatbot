@@ -1,24 +1,20 @@
 {
-  "name": "sehatbot-server",
+  "name": "sehatbot-monorepo",
+  "private": true,
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "packageManager": "pnpm@10.9.0",
-  "dependencies": {
-    "@google-cloud/storage": "^7.16.0",
-    "@google/genai": "^1.11.0",
-    "body-parser": "^2.2.0",
-    "dotenv": "^17.2.0",
-    "express": "^5.1.0",
-    "zod": "^4.0.8"
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter @sehatbot/server dev",
+    "start": "pnpm --filter @sehatbot/server start",
+    "dev:server": "pnpm --filter @sehatbot/server dev",
+    "start:server": "pnpm --filter @sehatbot/server start",
+    "dev:client": "pnpm --filter @sehatbot/client dev",
+    "build:client": "pnpm --filter @sehatbot/client build",
+    "preview:client": "pnpm --filter @sehatbot/client preview"
   }
 }

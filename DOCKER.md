@@ -1,6 +1,6 @@
-# SehatBot Server - Docker Setup
+# SehatBot Monorepo - Docker Setup
 
-This document explains how to run the SehatBot server using Docker.
+This document explains how to run the SehatBot apps (server and client) using Docker in the current monorepo.
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ This document explains how to run the SehatBot server using Docker.
 
 ## Environment Variables
 
-Create a `.env` file in the root directory with your environment variables:
+Create a `.env` file inside `apps/server` with your environment variables:
 
 ```bash
 API_KEY=your_google_api_key_here
@@ -18,28 +18,28 @@ API_KEY=your_google_api_key_here
 
 ## Building and Running
 
-### Production Mode
+### Production Mode (Server only)
 
 1. **Build the Docker image:**
    ```bash
-   docker build -t sehatbot-server .
+   docker build -t sehatbot-server ./apps/server
    ```
 
 2. **Run the container:**
    ```bash
-   docker run -p 8080:8080 --env-file .env sehatbot-server
+   docker run -p 8080:8080 --env-file apps/server/.env sehatbot-server
    ```
 
 3. **Or use Docker Compose:**
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
-### Development Mode
+### Development Mode (Server + Client)
 
 1. **Run in development mode with hot reload:**
    ```bash
-   docker-compose -f docker-compose.dev.yml up --build
+   docker compose -f docker-compose.dev.yml up --build
    ```
 
 ## Docker Commands
@@ -47,11 +47,11 @@ API_KEY=your_google_api_key_here
 ### Basic Commands
 
 ```bash
-# Build the image
-docker build -t sehatbot-server .
+# Build the server image
+docker build -t sehatbot-server ./apps/server
 
 # Run the container
-docker run -p 8080:8080 --env-file .env sehatbot-server
+docker run -p 8080:8080 --env-file apps/server/.env sehatbot-server
 
 # Run in background
 docker run -d -p 8080:8080 --env-file .env --name sehatbot sehatbot-server
@@ -73,27 +73,27 @@ docker exec -it sehatbot sh
 
 ```bash
 # Start services (production)
-docker-compose up
+docker compose up
 
 # Start services in background
-docker-compose up -d
+docker compose up -d
 
 # Start development services
-docker-compose -f docker-compose.dev.yml up
+docker compose -f docker-compose.dev.yml up
 
 # Stop services
-docker-compose down
+docker compose down
 
 # View logs
-docker-compose logs
+docker compose logs
 
 # Rebuild and start
-docker-compose up --build
+docker compose up --build
 ```
 
 ## Health Check
 
-The application includes a health check endpoint at `/health` that returns:
+The server includes a health check endpoint at `/health` that returns:
 
 ```json
 {
@@ -110,9 +110,9 @@ The application includes a health check endpoint at `/health` that returns:
 
 ## Volume Mounts
 
-The docker-compose setup includes:
+The docker compose setup includes:
 - `gcp-key.json` mounted as read-only for Google Cloud authentication
-- In development mode, the source code is mounted for hot reload
+- In development mode, the server and client source code are mounted for hot reload
 
 ## Troubleshooting
 

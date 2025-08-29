@@ -13,4 +13,3 @@ console.log('Configuration loaded:', {
 if (!API_KEY) {
   console.error('WARNING: API_KEY environment variable is not set!');
 }
-

@@ -1,4 +1,3 @@
-
 import express from "express";
 import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
@@ -19,7 +18,8 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-app.use('/',userRouter)
+app.use('/', (req,res,next)=>{ if (req.path === '/') return res.redirect('/health'); next(); });
+app.use('/api',userRouter)
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT,()=>{
@@ -27,4 +27,3 @@ app.listen(PORT,()=>{
     console.log(`🏥 Health check available at: http://localhost:${PORT}/health`);
     console.log(`📊 Server started at: ${new Date().toISOString()}`);
 })
-

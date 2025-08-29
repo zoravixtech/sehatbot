@@ -1,18 +1,18 @@
 version: '3.8'
 
 services:
-  sehatbot-server:
-    build: .
+  server:
+    build:
+      context: ./apps/server
+      target: production
     ports:
       - "8080:8080"
     environment:
       - NODE_ENV=production
-      # Add your environment variables here
-      # - API_KEY=${API_KEY}
     volumes:
-      # Mount your GCP key file if needed
       - ./gcp-key.json:/app/gcp-key.json:ro
     restart: unless-stopped
+    working_dir: /app
     healthcheck:
       test: ["CMD", "node", "healthcheck.js"]
       interval: 30s
