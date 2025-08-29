@@ -21,11 +21,13 @@ API_KEY=your_google_api_key_here
 ### Production Mode (Server only)
 
 1. **Build the Docker image:**
+
    ```bash
    docker build -t sehatbot-server ./apps/server
    ```
 
 2. **Run the container:**
+
    ```bash
    docker run -p 8080:8080 --env-file apps/server/.env sehatbot-server
    ```
@@ -111,20 +113,24 @@ The server includes a health check endpoint at `/health` that returns:
 ## Volume Mounts
 
 The docker compose setup includes:
+
 - `gcp-key.json` mounted as read-only for Google Cloud authentication
 - In development mode, the server and client source code are mounted for hot reload
 
 ## Troubleshooting
 
 1. **Permission Issues:**
+
    - The container runs as a non-root user for security
    - Ensure file permissions are correct
 
 2. **Environment Variables:**
+
    - Check that your `.env` file exists and contains all required variables
    - Use `docker-compose config` to verify your configuration
 
 3. **Port Conflicts:**
+
    - If port 8080 is already in use, change the host port in docker-compose.yml
 
 4. **Build Issues:**

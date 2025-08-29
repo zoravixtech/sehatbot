@@ -6,22 +6,22 @@ import { API_KEY } from "../config.js";
 let ai;
 try {
   if (!API_KEY) {
-    throw new Error('API_KEY is not configured');
+    throw new Error("API_KEY is not configured");
   }
   ai = new GoogleGenAI({ apiKey: API_KEY });
-  console.log('Google GenAI initialized successfully');
+  console.log("Google GenAI initialized successfully");
 } catch (error) {
-  console.error('Failed to initialize Google GenAI:', error.message);
+  console.error("Failed to initialize Google GenAI:", error.message);
   ai = null;
 }
-
 
 export const generateResponse = async (req, res) => {
   // Check if AI is properly initialized
   if (!ai) {
     return res.status(500).json({
       error: "Service unavailable",
-      message: "AI service is not properly configured. Please check API_KEY environment variable."
+      message:
+        "AI service is not properly configured. Please check API_KEY environment variable.",
     });
   }
 
@@ -37,8 +37,8 @@ export const generateResponse = async (req, res) => {
   const { fileUrl, documentType, language } = parsed.data;
   let textPrompt;
 
- if (documentType === "prescription") {
-  textPrompt = `
+  if (documentType === "prescription") {
+    textPrompt = `
 You are an **Expert Pharmacist AI** specialized in **structured data extraction**. Your only task is to analyze the provided image of a medical prescription (handwritten or printed) and generate a single, complete, and valid **JSON object**. Follow the rules exactly to ensure safety and reliability.
 
 --- DYNAMIC_VARIABLES:
@@ -125,10 +125,8 @@ The \`disclaimer_text\` field must always contain this exact string (translated 
 
 "Important: This is an AI-generated interpretation and may contain errors, especially with handwritten notes. For your safety, every medicine listed must be cross-checked with your doctor or a registered pharmacist. ALWAYS verify all medication names, dosages, and instructions before taking or administering any medicine. Do not use this as a substitute for professional medical advice."
 `;
-}
-
- else {
-  textPrompt = `
+  } else {
+    textPrompt = `
 You are a medically trained AI assistant integrated into a health report interpretation app. Your only task is to read and summarize medical reports (e.g., CBC, LFT, RFT, Radiology, HbA1c, etc.) into a JSON response suitable for frontend rendering in a mobile or web application.
 
 --- DYNAMIC_VARIABLES:
@@ -166,9 +164,7 @@ Respond with this exact JSON in the TARGET_LANGUAGE:
 Translate and always include this in the "disclaimer" field:
 "Important: This summary is for informational purposes only and does not replace professional medical advice. Always consult your doctor for accurate diagnosis and treatment decisions."
 `;
-}
-
-
+  }
 
   const pdfResp = await fetch(fileUrl).then((response) =>
     response.arrayBuffer()
