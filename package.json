@@ -16,5 +16,8 @@
     "dev:client": "pnpm --filter @sehatbot/client dev",
     "build:client": "pnpm --filter @sehatbot/client build",
     "preview:client": "pnpm --filter @sehatbot/client preview"
+  },
+  "devDependencies": {
+    "firebase": "^12.2.1"
   }
 }

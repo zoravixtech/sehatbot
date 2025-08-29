@@ -46,7 +46,7 @@ TARGET_LANGUAGE: [${language}]
 
 --- INSTRUCTIONS:
 
-1. **Primary Output:** Your response MUST be a single, valid JSON object. Do NOT include any extra text, markdown, explanations, or code blocks. Start with { and end with }.
+1. **Primary Output:** Your response MUST be a single, valid JSON object. Do NOT include any extra text, markdown, explanations, or code blocks. Do NOT wrap output in triple backticks. Start with { and end with }.
 
 2. **Language Translation:** All values inside the JSON object must be translated into the TARGET_LANGUAGE using native script (e.g., Hindi → देवनागरी).
 
@@ -135,7 +135,7 @@ TARGET_LANGUAGE: [${language}]
 --- INSTRUCTIONS:
 
 1. Response Format (IMPORTANT):
-Output ONLY valid JSON. Do not include any explanations, markdown, text before or after the JSON. Do not wrap in triple backticks. Do not include code formatting or comments. Just plain JSON.
+Output ONLY valid JSON. Do not include any explanations, markdown, text before or after the JSON. Do not wrap in triple backticks or any code fences. Do not include code formatting or comments. Just plain JSON.
 
 2. JSON Output Structure:
 The JSON must contain the following fields:
@@ -180,10 +180,57 @@ Translate and always include this in the "disclaimer" field:
     },
   ];
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: contents,
-  });
-  console.log(response.text);
-  res.send(response.text);
+  // Prefer structured output (JSON) to avoid code fences and markdown
+  const generationConfig = {
+    responseMimeType: "application/json",
+  };
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents,
+      generationConfig,
+    });
+
+    // Extract text robustly across SDK variants
+    let rawText = "";
+    try {
+      rawText =
+        typeof response.text === "function"
+          ? await response.text()
+          : response.text || "";
+    } catch (_) {
+      try {
+        rawText = response?.response?.text?.() || "";
+      } catch {
+        rawText = "";
+      }
+    }
+
+    const cleaned = (rawText || "")
+      .trim()
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```\s*$/, "");
+
+    let json;
+    try {
+      json = JSON.parse(cleaned);
+    } catch (err) {
+      // If parsing fails, return a clear error payload for the client
+      return res.status(200).json({
+        error:
+          "Failed to parse AI output as JSON. Please try again or use a clearer document.",
+        raw: cleaned || rawText,
+      });
+    }
+
+    return res.status(200).json(json);
+  } catch (err) {
+    console.error("AI generation error:", err);
+    return res.status(500).json({
+      error: "AI generation failed",
+      details: err?.message || String(err),
+    });
+  }
 };

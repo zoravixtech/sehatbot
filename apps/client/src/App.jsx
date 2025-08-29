@@ -1,34 +1,118 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { storage } from "./firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Layout from "./components/Layout";
+import Controls from "./components/Controls";
+import FileUploader from "./components/FileUploader";
+import Loader from "./components/Loader";
+import ErrorBanner from "./components/ErrorBanner";
+import PrescriptionView from "./components/results/PrescriptionView";
+import ReportView from "./components/results/ReportView";
+import RawView from "./components/results/RawView";
+import { normalizeResult } from "./utils/parseResult";
 
 function App() {
-  const [health, setHealth] = useState(null);
+  const [file, setFile] = useState(null);
+  const [documentType, setDocumentType] = useState("report");
+  const [language, setLanguage] = useState("english");
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function checkHealth() {
+  const canSubmit = useMemo(
+    () => !!file && !!documentType && !!language,
+    [file, documentType, language]
+  );
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setResult(null);
+    if (!file) {
+      setError("Please choose a PDF file first.");
+      return;
+    }
+    if (file.type !== "application/pdf") {
+      setError("Only PDF files are supported.");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/health");
-      const data = await res.json();
-      setHealth(data);
-    } catch (e) {
-      setHealth({ error: e.message });
+      setIsLoading(true);
+      setStatus("Uploading PDF to Firebase Storage...");
+
+      const uniqueName = `${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+      const storagePath = `${documentType}/${uniqueName}`;
+      const fileRef = ref(storage, storagePath);
+      await uploadBytes(fileRef, file, { contentType: "application/pdf" });
+      const fileViewUrl = await getDownloadURL(fileRef);
+
+      setStatus("Generating AI summary...");
+      const genRes = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ documentType, fileUrl: fileViewUrl, language }),
+      });
+
+      if (!genRes.ok) {
+        const t = await genRes.text();
+        throw new Error(`Generate failed (${genRes.status}): ${t}`);
+      }
+
+      const aiJson = await genRes.json();
+      const normalized = normalizeResult(aiJson);
+      setResult(normalized);
+      if (normalized && normalized.kind === "error") {
+        setError(normalized.error || "Unexpected error from AI service.");
+      } else {
+        setError("");
+      }
+      setStatus("Done.");
+    } catch (err) {
+      setError(err.message || String(err));
+      setStatus("");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <div style={{ padding: 24, fontFamily: "system-ui, sans-serif" }}>
-      <h1>SehatBot Client</h1>
-      <p>Use the button below to hit the API health endpoint via proxy.</p>
-      <button onClick={checkHealth}>Check API Health</button>
-      <pre
-        style={{
-          background: "#111",
-          color: "#0f0",
-          padding: 12,
-          marginTop: 12,
-        }}
-      >
-        {health ? JSON.stringify(health, null, 2) : "No data yet"}
-      </pre>
-    </div>
+    <Layout>
+      <form onSubmit={handleSubmit} className="card">
+        <Controls
+          documentType={documentType}
+          setDocumentType={setDocumentType}
+          language={language}
+          setLanguage={setLanguage}
+        />
+
+        <FileUploader file={file} onChange={setFile} />
+
+        <div className="row">
+          <button type="submit" disabled={!canSubmit || isLoading}>
+            {isLoading ? "Processing..." : "Analyze PDF"}
+          </button>
+          {isLoading ? (
+            <Loader text={status || "Working..."} />
+          ) : (
+            <span className="muted">{status}</span>
+          )}
+        </div>
+
+        <ErrorBanner message={error} />
+      </form>
+
+      {result ? (
+        result.kind === "prescription" ? (
+          <PrescriptionView data={result} />
+        ) : result.kind === "report" ? (
+          <ReportView data={result} />
+        ) : (
+          <RawView raw={result.raw || result} />
+        )
+      ) : null}
+    </Layout>
   );
 }
 
