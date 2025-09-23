@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm --filter @sehatbot/server dev",
+    "dev": "pnpm run dev:server & pnpm run dev:client",
     "start": "pnpm --filter @sehatbot/server start",
     "dev:server": "pnpm --filter @sehatbot/server dev",
     "start:server": "pnpm --filter @sehatbot/server start",
