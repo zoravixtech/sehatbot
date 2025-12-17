@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../constants";
 
 export default function HealthCheck() {
   const [health, setHealth] = useState(null);
@@ -9,7 +10,7 @@ export default function HealthCheck() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/health");
+      const res = await fetch(`${API_BASE_URL}/health`);
       const data = await res.json();
       setHealth(data);
     } catch (e) {

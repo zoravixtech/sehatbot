@@ -10,6 +10,7 @@ import PrescriptionView from "./components/results/PrescriptionView";
 import ReportView from "./components/results/ReportView";
 import RawView from "./components/results/RawView";
 import { normalizeResult } from "./utils/parseResult";
+import { API_BASE_URL } from "./constants";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -50,10 +51,10 @@ function App() {
       const fileViewUrl = await getDownloadURL(fileRef);
 
       setStatus("Generating AI summary...");
-      const genRes = await fetch("/api/generate", {
+      const genRes = await fetch(`${API_BASE_URL}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({  
           documentType, 
           fileUrl: fileViewUrl, 
           language,

@@ -5,14 +5,25 @@ let storage;
 let bucket;
 
 try {
-  storage = new Storage({
+  const credentials = process.env.GCP_SERVICE_ACCOUNT_JSON
+    ? JSON.parse(process.env.GCP_SERVICE_ACCOUNT_JSON)
+    : undefined;
+
+  const storageOptions = {
     projectId: "sehat-42ec3",
-    keyFilename: "gcp-key.json",
-  });
+  };
+
+  if (credentials) {
+    storageOptions.credentials = credentials;
+  } else {
+    storageOptions.keyFilename = "gcp-key.json";
+  }
+
+  storage = new Storage(storageOptions);
   const bucketName = "document_bucket-1";
   bucket = storage.bucket(bucketName);
 } catch (err) {
-  console.warn("⚠️ Google Cloud Storage not initialized (missing key file?)");
+  console.warn("⚠️ Google Cloud Storage not initialized:", err.message);
 }
 
 export const getSignedUrl = async (req, res) => {
