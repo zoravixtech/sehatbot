@@ -1,32 +1,40 @@
-version: "3.8"
-
 services:
+  installer:
+    image: node:22-alpine
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install"
+
   server:
-    build:
-      context: ./apps/server
-      target: production
+    image: node:22-alpine
     ports:
       - "8080:8080"
-    environment:
-      - NODE_ENV=production
     volumes:
-      - ./gcp-key.json:/app/gcp-key.json:ro
-    restart: unless-stopped
-    working_dir: /app
-    healthcheck:
-      test: ["CMD", "node", "healthcheck.js"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm --filter @sehatbot/server dev"
+    environment:
+      - PORT=8080
+      - GOOGLE_APPLICATION_CREDENTIALS=/home/node/app/gcp-key.json
+    depends_on:
+      installer:
+        condition: service_completed_successfully
 
-  # Uncomment if you want to add a reverse proxy
-  # nginx:
-  #   image: nginx:alpine
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - sehatbot-server
-  #   restart: unless-stopped
+  client:
+    image: node:22-alpine
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm --filter @sehatbot/client dev --host"
+    depends_on:
+      installer:
+        condition: service_completed_successfully
+
+volumes:
+  node_modules:

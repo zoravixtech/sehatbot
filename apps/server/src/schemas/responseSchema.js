@@ -4,5 +4,6 @@ const generateResponseSchema = z.object({
   documentType: z.enum(["report", "prescription"]),
   fileUrl: z.string().url(),
   language: z.enum(["english", "bengali", "hindi"]),
+  contentType: z.string().optional(),
 });
 export default generateResponseSchema;

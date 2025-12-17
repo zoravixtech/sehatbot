@@ -34,7 +34,7 @@ export const generateResponse = async (req, res) => {
     });
   }
 
-  const { fileUrl, documentType, language } = parsed.data;
+  const { fileUrl, documentType, language, contentType } = parsed.data;
   let textPrompt;
 
   if (documentType === "prescription") {
@@ -157,7 +157,7 @@ The JSON must contain the following fields:
 4. If the uploaded document is NOT a lab report or radiology report:
 Respond with this exact JSON in the TARGET_LANGUAGE:
 {
-  "error": "⚠️ Sorry! This app is designed to understand medical reports such as blood tests or scans. Please upload a valid medical report (PDF)."
+  "error": "⚠️ Sorry! This app is designed to understand medical reports such as blood tests or scans. Please upload a valid medical report (PDF or Image)."
 }
 
 5. Final Disclaimer Translation:
@@ -174,7 +174,7 @@ Translate and always include this in the "disclaimer" field:
     { text: textPrompt },
     {
       inlineData: {
-        mimeType: "application/pdf",
+        mimeType: contentType || "application/pdf",
         data: Buffer.from(pdfResp).toString("base64"),
       },
     },

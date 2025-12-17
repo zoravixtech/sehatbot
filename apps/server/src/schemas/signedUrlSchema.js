@@ -4,6 +4,7 @@ const getSignedUrlSchema = z.object({
   fileName: z.string(),
   documentType: z.string(),
   fileSize: z.string(),
+  contentType: z.string(),
 });
 
 export default getSignedUrlSchema;

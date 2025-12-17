@@ -12,10 +12,10 @@ export default function PrescriptionView({ data }) {
   } = data;
   return (
     <section className="card">
-      <h3 className="headline">Prescription Summary</h3>
+      <h3 className="headline" style={{ fontSize: '1.8em', marginBottom: '24px', color: 'var(--accent)' }}>💊 Prescription Summary</h3>
       <div className="grid two">
         <div>
-          <h4>Patient</h4>
+          <h4 style={{ color: 'var(--accent)', marginTop: '0' }}>👤 Patient Information</h4>
           <ul className="list">
             <li>
               <strong>Name:</strong> {patient?.name || "-"}
@@ -29,7 +29,7 @@ export default function PrescriptionView({ data }) {
           </ul>
         </div>
         <div>
-          <h4>Prescription Details</h4>
+          <h4 style={{ color: 'var(--accent)', marginTop: '0' }}>📋 Prescription Details</h4>
           <ul className="list">
             <li>
               <strong>Date:</strong> {prescription?.date || "-"}
@@ -59,8 +59,8 @@ export default function PrescriptionView({ data }) {
       </div>
 
       {diagnosis?.length ? (
-        <div>
-          <h4>Diagnosis / Complaints</h4>
+        <div style={{ marginTop: '24px' }}>
+          <h4 style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>🩺 Diagnosis / Complaints</h4>
           <ul className="bullets">
             {diagnosis.map((d, i) => (
               <li key={i}>{d}</li>
@@ -70,18 +70,18 @@ export default function PrescriptionView({ data }) {
       ) : null}
 
       {medications?.length ? (
-        <div>
-          <h4>Medications</h4>
+        <div style={{ marginTop: '24px' }}>
+          <h4 style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>💊 Medications</h4>
           <div className="meds">
             {medications.map((m, i) => (
               <div key={i} className="med">
-                <div className="med-title">{m.name || "Unknown"}</div>
+                <div className="med-title">💊 {m.name || "Unknown"}</div>
                 <div className="med-meta">
-                  {m.dosage && <span>{m.dosage}</span>}
-                  {m.frequency && <span>• {m.frequency}</span>}
-                  {m.duration && <span>• {m.duration}</span>}
+                  {m.dosage && <span>📏 {m.dosage}</span>}
+                  {m.frequency && <span>• ⏰ {m.frequency}</span>}
+                  {m.duration && <span>• 📅 {m.duration}</span>}
                   {m.timing_instructions && (
-                    <span>• {m.timing_instructions}</span>
+                    <span>• 🕐 {m.timing_instructions}</span>
                   )}
                 </div>
               </div>
@@ -91,12 +91,12 @@ export default function PrescriptionView({ data }) {
       ) : null}
 
       {tests?.length ? (
-        <div>
-          <h4>Diagnostic Tests</h4>
+        <div style={{ marginTop: '24px' }}>
+          <h4 style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>🔬 Diagnostic Tests</h4>
           <ul className="chips">
             {tests.map((t, i) => (
               <li key={i} className="chip">
-                {t}
+                🧪 {t}
               </li>
             ))}
           </ul>
@@ -104,8 +104,8 @@ export default function PrescriptionView({ data }) {
       ) : null}
 
       {advice?.length ? (
-        <div>
-          <h4>General Advice</h4>
+        <div style={{ marginTop: '24px' }}>
+          <h4 style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>💡 General Advice</h4>
           <ul className="bullets">
             {advice.map((a, i) => (
               <li key={i}>{a}</li>

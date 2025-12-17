@@ -8,13 +8,14 @@ export default defineConfig({
     host: true,
     proxy: {
       "/api": {
-        target: process.env?.VITE_API_URL || "http://localhost:8080",
+        target: process.env?.VITE_API_URL || "http://127.0.0.1:8080",
         changeOrigin: true,
-        // Do not rewrite; keep /api so backend route prefix matches
+        secure: false,
       },
       "/health": {
-        target: process.env?.VITE_API_URL || "http://localhost:8080",
+        target: process.env?.VITE_API_URL || "http://127.0.0.1:8080",
         changeOrigin: true,
+        secure: false,
       },
     },
   },

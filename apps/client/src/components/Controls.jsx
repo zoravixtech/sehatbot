@@ -9,7 +9,7 @@ export default function Controls({
   return (
     <div className="fields-2">
       <label className="field">
-        <span className="label">Document Type</span>
+        <span className="label">📄 Document Type</span>
         <select
           value={documentType}
           onChange={(e) => setDocumentType(e.target.value)}
@@ -22,7 +22,7 @@ export default function Controls({
         </select>
       </label>
       <label className="field">
-        <span className="label">Language</span>
+        <span className="label">🌐 Language</span>
         <select value={language} onChange={(e) => setLanguage(e.target.value)}>
           {languages.map((l) => (
             <option key={l.value} value={l.value}>
